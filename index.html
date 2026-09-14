@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#120006">
+  <title>Happy Birthday, My Girl ❤️</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stars"></div>
+
+  <main class="app">
+    <section id="lockScreen" class="screen active">
+      <div class="lock-card">
+        <button class="avatar-button" id="hintButton" aria-label="Show passkey hint">
+          <img src="assets/profile.svg" alt="Birthday picture">
+        </button>
+        <p class="small-label">A little surprise for you</p>
+        <h1>LOCKED</h1>
+        <p class="hint" id="hintText">Hint: Click the picture to know the passkey!</p>
+
+        <div class="dots" id="dots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="keypad" aria-label="Passkey keypad">
+          <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+          <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+          <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+          <button data-key="clear">⌫</button><button data-key="0">0</button><button data-key="enter">✓</button>
+        </div>
+        <p class="error" id="error"></p>
+      </div>
+    </section>
+
+    <section id="welcomeScreen" class="screen">
+      <div class="welcome-content">
+        <div class="glow-heart">♡</div>
+        <p class="eyebrow">You have completed the little challenge</p>
+        <h2>Happy Birthday<br>My Girl <span>♡</span></h2>
+        <p class="welcome-text">Today is about you, your smile, and every beautiful memory we share.</p>
+        <button class="primary" id="memoriesButton">Continue ↓</button>
+      </div>
+    </section>
+
+    <section id="memoriesScreen" class="screen">
+      <div class="section-inner">
+        <p class="eyebrow">A few moments I keep close</p>
+        <h2>Special Memories <span>✦</span></h2>
+        <p class="swipe">Swipe for more ✦</p>
+
+        <div class="memory-row">
+          <article class="memory-card">
+            <img src="assets/photo1.svg" alt="Memory one">
+            <div class="memory-caption">Your smile ❤️</div>
+          </article>
+          <article class="memory-card">
+            <img src="assets/photo2.svg" alt="Memory two">
+            <div class="memory-caption">A beautiful moment</div>
+          </article>
+          <article class="memory-card">
+            <img src="assets/photo3.svg" alt="Memory three">
+            <div class="memory-caption">Us, in a little moment</div>
+          </article>
+          <article class="memory-card">
+            <img src="assets/photo4.svg" alt="Memory four">
+            <div class="memory-caption">One more memory ✨</div>
+          </article>
+        </div>
+
+        <button class="primary message-button" id="messageButton">♡ MY MESSAGE</button>
+      </div>
+    </section>
+
+    <div class="modal" id="messageModal" aria-hidden="true">
+      <div class="modal-card">
+        <button class="close" id="closeModal">×</button>
+        <p class="eyebrow">For my favorite person ✦</p>
+        <h2>JUST FOR YOU <span>✦</span></h2>
+        <div class="letter">
+          <h3>Happy Birthday, Love ❤️</h3>
+          <p>
+            You are one of the most beautiful parts of my life.
+            I am grateful for every laugh, every conversation, and every memory we share.
+          </p>
+          <p>
+            I hope this new chapter brings you peace, happiness, success, and everything your heart deserves.
+            Keep smiling. Keep being you.
+          </p>
+          <p class="signature">With love, always ❤️</p>
+        </div>
+        <div class="modal-actions">
+          <button class="primary" id="celebrateButton">CELEBRATE ✨</button>
+          <button class="secondary" id="restartButton">RESTART ↻</button>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="confetti"></canvas>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
