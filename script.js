@@ -1,141 +1,105 @@
-// Change this to the 4-digit passkey you want.
-const PASSKEY = "0603";
+let currentPin = "";
+const correctPin = "2026";
 
-const screens = {
-  lock: document.getElementById("lockScreen"),
-  welcome: document.getElementById("welcomeScreen"),
-  memories: document.getElementById("memoriesScreen")
-};
-
-let entered = "";
-
-function showScreen(screen) {
-  Object.values(screens).forEach(s => s.classList.remove("active"));
-  screen.classList.add("active");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function updateDots() {
-  document.querySelectorAll("#dots span").forEach((dot, i) => {
-    dot.classList.toggle("filled", i < entered.length);
-  });
-}
-
-function clearCode() {
-  entered = "";
-  updateDots();
-  document.getElementById("error").textContent = "";
-}
-
-function submitCode() {
-  if (entered === PASSKEY) {
-    clearCode();
-    showScreen(screens.welcome);
-  } else {
-    document.getElementById("error").textContent = "Wrong passkey. Try again.";
-    entered = "";
-    updateDots();
+function pressKey(num) {
+  if (currentPin.length < 4) {
+    currentPin += num;
+    updatePinDisplay();
   }
 }
 
-document.querySelectorAll(".keypad button").forEach(button => {
-  button.addEventListener("click", () => {
-    const key = button.dataset.key;
-
-    if (key === "clear") {
-      clearCode();
-      return;
-    }
-
-    if (key === "enter") {
-      submitCode();
-      return;
-    }
-
-    if (entered.length < 4) {
-      entered += key;
-      updateDots();
-      if (entered.length === 4) setTimeout(submitCode, 220);
-    }
-  });
-});
-
-document.getElementById("hintButton").addEventListener("click", () => {
-  const hint = document.getElementById("hintText");
-  hint.textContent = `Passkey hint: ${PASSKEY.split("").join(" • ")}`;
-  hint.style.color = "#ff8eab";
-});
-
-document.getElementById("memoriesButton").addEventListener("click", () => {
-  showScreen(screens.memories);
-});
-
-const modal = document.getElementById("messageModal");
-
-document.getElementById("messageButton").addEventListener("click", () => {
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-});
-
-document.getElementById("closeModal").addEventListener("click", closeModal);
-
-modal.addEventListener("click", e => {
-  if (e.target === modal) closeModal();
-});
-
-function closeModal() {
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
+function clearPin() {
+  currentPin = currentPin.slice(0, -1);
+  updatePinDisplay();
 }
 
-document.getElementById("restartButton").addEventListener("click", () => {
-  closeModal();
-  showScreen(screens.lock);
-});
+function updatePinDisplay() {
+  let display = "";
 
-document.getElementById("celebrateButton").addEventListener("click", () => {
-  launchConfetti();
-});
-
-function launchConfetti() {
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const pieces = Array.from({ length: 150 }, () => ({
-    x: Math.random() * canvas.width,
-    y: -20 - Math.random() * canvas.height * .2,
-    size: 5 + Math.random() * 8,
-    speed: 2 + Math.random() * 5,
-    rotation: Math.random() * 360,
-    spin: -5 + Math.random() * 10,
-    hue: Math.random() * 360
-  }));
-
-  let start = performance.now();
-
-  function frame(now) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    pieces.forEach(p => {
-      p.y += p.speed;
-      p.rotation += p.spin;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rotation * Math.PI / 180);
-      ctx.fillStyle = `hsl(${p.hue}, 80%, 70%)`;
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * .55);
-      ctx.restore();
-    });
-
-    if (now - start < 4500) {
-      requestAnimationFrame(frame);
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+  for (let i = 0; i < 4; i++) {
+    display += i < currentPin.length ? currentPin[i] + " " : "_ ";
   }
 
-  requestAnimationFrame(frame);
+  document.getElementById("pinDisplay").innerText = display.trim();
 }
+
+function submitPin() {
+  if (currentPin === correctPin) {
+    goToScreen("screen-loading");
+
+    setTimeout(() => {
+      goToScreen("screen-welcome");
+    }, 2000);
+
+    return;
+  }
+
+  alert("Incorrect PIN! Tap 'Click here to view passkey' for the code.");
+  currentPin = "";
+  updatePinDisplay();
+}
+
+function openHint() {
+  document.getElementById("hintModal").style.display = "flex";
+}
+
+function closeHint() {
+  document.getElementById("hintModal").style.display = "none";
+}
+
+function goToScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  const nextScreen = document.getElementById(screenId);
+
+  if (nextScreen) {
+    nextScreen.classList.add("active");
+    window.scrollTo(0, 0);
+  }
+}
+
+function openLetter() {
+  document.getElementById("letterStatus").innerText = "OPENING LETTER...";
+
+  setTimeout(() => {
+    goToScreen("screen-message");
+  }, 700);
+}
+
+function triggerCelebrate() {
+  confetti({
+    particleCount: 180,
+    spread: 100,
+    origin: { y: 0.55 },
+    zIndex: 99999,
+    scalar: 1.2,
+    ticks: 300
+  });
+
+  setTimeout(() => {
+    goToScreen("screen-celebration");
+  }, 900);
+}
+
+function restartApp() {
+  if (typeof confetti !== "undefined") {
+    confetti.reset();
+  }
+
+  currentPin = "";
+  updatePinDisplay();
+
+  document.getElementById("hintModal").style.display = "none";
+  document.getElementById("letterStatus").innerText = "TAP TO OPEN";
+
+  goToScreen("screen-lock");
+}
+
+document.addEventListener("keydown", event => {
+  if (/^[0-9]$/.test(event.key)) pressKey(event.key);
+  if (event.key === "Backspace") clearPin();
+  if (event.key === "Enter") submitPin();
+  if (event.key === "Escape") closeHint();
+});

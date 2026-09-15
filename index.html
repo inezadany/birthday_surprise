@@ -3,101 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#120006">
-  <title>Happy Birthday, My Girl ❤️</title>
+  <meta name="theme-color" content="#080103">
+  <title>Happy Birthday My Love 🌸</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
+
 <body>
-  <div class="stars"></div>
+  <main class="app-container">
 
-  <main class="app">
-    <section id="lockScreen" class="screen active">
+    <!-- PART 1: LOCKED -->
+    <section id="screen-lock" class="screen active">
       <div class="lock-card">
-        <button class="avatar-button" id="hintButton" aria-label="Show passkey hint">
-          <img src="assets/photo1.jpeg" alt="Birthday picture">
-        </button>
-        <p class="small-label">A little surprise for you</p>
-        <h1>LOCKED</h1>
-        <p class="hint" id="hintText">Hint: Click the picture to know the passkey!</p>
+        <div class="lock-status">LOCKED</div>
+        <div class="subtitle">Click a picture to reveal passkey</div>
+        <button class="hint-link" onclick="openHint()">Click here to view passkey 📷</button>
 
-        <div class="dots" id="dots">
-          <span></span><span></span><span></span><span></span>
-        </div>
+        <div class="pin-display" id="pinDisplay">_ _ _ _</div>
 
-        <div class="keypad" aria-label="Passkey keypad">
-          <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
-          <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
-          <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
-          <button data-key="clear">⌫</button><button data-key="0">0</button><button data-key="enter">✓</button>
+        <div class="keypad">
+          <button class="key-btn" onclick="pressKey('1')">1</button>
+          <button class="key-btn" onclick="pressKey('2')">2</button>
+          <button class="key-btn" onclick="pressKey('3')">3</button>
+          <button class="key-btn" onclick="pressKey('4')">4</button>
+          <button class="key-btn" onclick="pressKey('5')">5</button>
+          <button class="key-btn" onclick="pressKey('6')">6</button>
+          <button class="key-btn" onclick="pressKey('7')">7</button>
+          <button class="key-btn" onclick="pressKey('8')">8</button>
+          <button class="key-btn" onclick="pressKey('9')">9</button>
+          <button class="key-btn" onclick="clearPin()">⌫</button>
+          <button class="key-btn" onclick="pressKey('0')">0</button>
+          <button class="key-btn" onclick="submitPin()">🔓</button>
         </div>
-        <p class="error" id="error"></p>
       </div>
     </section>
 
-    <section id="welcomeScreen" class="screen">
-      <div class="welcome-content">
-        <div class="glow-heart">♡</div>
-        <p class="eyebrow">You have completed the little challenge</p>
-        <h2>Happy Birthday<br>My Girl <span>♡</span></h2>
-        <p class="welcome-text">Today is about you, your smile, and every beautiful memory we share.</p>
-        <button class="primary" id="memoriesButton">Continue ↓</button>
-      </div>
-    </section>
-
-    <section id="memoriesScreen" class="screen">
-      <div class="section-inner">
-        <p class="eyebrow">A few moments I keep close</p>
-        <h2>Special Memories <span>✦</span></h2>
-        <p class="swipe">Swipe for more ✦</p>
-
-        <div class="memory-row">
-          <article class="memory-card">
-            <img src="assets/photo1.jpeg" alt="Memory one">
-            <div class="memory-caption">Your smile ❤️</div>
-          </article>
-          <article class="memory-card">
-            <img src="assets/photo2.jpeg" alt="Memory two">
-            <div class="memory-caption">A beautiful moment</div>
-          </article>
-          <article class="memory-card">
-            <img src="assets/photo2.jpeg" alt="Memory three">
-            <div class="memory-caption">Us, in a little moment</div>
-          </article>
-          <article class="memory-card">
-            <img src="assets/photo2.jpeg" alt="Memory four">
-            <div class="memory-caption">One more memory ✨</div>
-          </article>
-        </div>
-
-        <button class="primary message-button" id="messageButton">♡ MY MESSAGE</button>
-      </div>
-    </section>
-
-    <div class="modal" id="messageModal" aria-hidden="true">
+    <!-- PASSKEY HINT -->
+    <div id="hintModal" class="modal-overlay">
       <div class="modal-card">
-        <button class="close" id="closeModal">×</button>
-        <p class="eyebrow">For my favorite person ✦</p>
-        <h2>JUST FOR YOU <span>✦</span></h2>
-        <div class="letter">
-          <h3>Happy Birthday, Love ❤️</h3>
-          <p>
-            You are one of the most beautiful parts of my life.
-            I am grateful for every laugh, every conversation, and every memory we share.
-          </p>
-          <p>
-            I hope this new chapter brings you peace, happiness, success, and everything your heart deserves.
-            Keep smiling. Keep being you.
-          </p>
-          <p class="signature">With love, always ❤️</p>
-        </div>
-        <div class="modal-actions">
-          <button class="primary" id="celebrateButton">CELEBRATE ✨</button>
-          <button class="secondary" id="restartButton">RESTART ↻</button>
-        </div>
+        <button class="close-btn" onclick="closeHint()">&times;</button>
+        <img src="assets/photo1.jpeg" alt="Passkey hint">
+        <div class="modal-passkey">PASSKEY = 2026</div>
       </div>
     </div>
 
-    <canvas id="confetti"></canvas>
+    <!-- PART 2: LOADING -->
+    <section id="screen-loading" class="screen">
+      <img src="assets/photo1.jpeg" alt="Profile" class="profile-img loading-img">
+      <div class="title">Hmm...</div>
+      <div class="subtitle">
+        Loading something special...<br>
+        <span class="pink-bold">FOR YOU</span>
+      </div>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </section>
+
+    <!-- PART 3: IT'S YOUR SPECIAL DAY -->
+    <section id="screen-welcome" class="screen">
+      <img src="assets/photo1.jpeg" alt="Profile" class="profile-img">
+      <div class="title">It's Your Special Day 🌸</div>
+      <div class="subtitle">I made something special for you...</div>
+      <button class="btn-main" onclick="goToScreen('screen-counter')">START 💖</button>
+    </section>
+
+    <!-- PART 4: BIRTHDAY COUNTER -->
+    <section id="screen-counter" class="screen">
+      <img src="assets/photo1.jpeg" alt="Profile" class="profile-img">
+      <div class="title">Happy Birthday My Girl 🌸</div>
+      <div class="subtitle">You have completed</div>
+
+      <div class="counter-grid">
+        <div class="counter-box">
+          <div class="counter-num">19</div>
+          <div class="counter-label">YEARS</div>
+        </div>
+        <div class="counter-box">
+          <div class="counter-num">0</div>
+          <div class="counter-label">MONTHS</div>
+        </div>
+        <div class="counter-box">
+          <div class="counter-num">19</div>
+          <div class="counter-label">DAYS</div>
+        </div>
+      </div>
+
+      <button class="btn-main" onclick="goToScreen('screen-gallery')">NEXT 💖</button>
+    </section>
+
+    <!-- PART 5: SPECIAL MEMORIES -->
+    <section id="screen-gallery" class="screen">
+      <div class="title">Special Memories</div>
+      <div class="subtitle">A few memories I wanted you to see 🌸</div>
+
+      <!-- Mobile-friendly 2 x 2 gallery -->
+      <div class="gallery-grid">
+        <div class="gallery-card"><img src="assets/photo1.jpeg" alt="Memory 1"></div>
+        <div class="gallery-card"><img src="assets/photo2.jpeg" alt="Memory 2"></div>
+        <div class="gallery-card"><img src="assets/photo1.jpeg" alt="Memory 3"></div>
+        <div class="gallery-card"><img src="assets/photo2.jpeg" alt="Memory 4"></div>
+      </div>
+
+      <button class="btn-main" onclick="goToScreen('screen-letter-intro')">MY MESSAGE 💖</button>
+    </section>
+
+    <!-- PART 6: LETTER INTRO -->
+    <section id="screen-letter-intro" class="screen">
+      <div class="title">A LETTER, JUST FOR YOU</div>
+      <div class="subtitle">Tap the heart to reveal your message</div>
+
+      <div class="envelope-card">
+        <button class="heart-btn" onclick="openLetter()">💌</button>
+        <div id="letterStatus">TAP TO OPEN</div>
+      </div>
+
+      <button class="btn-secondary small-btn" onclick="goToScreen('screen-gallery')">← BACK</button>
+    </section>
+
+    <!-- PART 7: ACTUAL LETTER -->
+    <section id="screen-message" class="screen">
+      <div class="letter-page">
+        <div class="title">JUST FOR YOU 💖</div>
+        <p class="letter-greeting">Happy Birthday, Love 💖</p>
+
+        <div class="letter-text">
+          You are the most beautiful part of my life, and I'm so lucky to have you.
+          Your smile makes my days better, and your presence makes everything feel special.
+          I hope your birthday is filled with happiness, love, and endless smiles.
+          <br><br>
+          Always stay happy, because your happiness means a lot to me. ❤️
+        </div>
+
+        <div class="action-btns">
+          <button class="btn-main full-btn" onclick="triggerCelebrate()">CELEBRATE 💖</button>
+          <button class="btn-secondary full-btn" onclick="restartApp()">RESTART 🔄</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 8: CELEBRATION -->
+    <section id="screen-celebration" class="screen">
+      <div class="celebration-heart">💖</div>
+      <div class="title">Happy Birthday, My Love 🌸</div>
+      <div class="subtitle">I hope today gives you every reason to smile.</div>
+      <button class="btn-main" onclick="restartApp()">START AGAIN 🔄</button>
+    </section>
+
   </main>
 
   <script src="script.js"></script>
