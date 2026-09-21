@@ -34,7 +34,7 @@ function submitPin() {
     return;
   }
 
-  alert("Incorrect PIN! Tap 'Click here to view passkey' for the code.");
+  alert("Incorrect PIN! Tap on 'Click here to view passkey' for the code.");
   currentPin = "";
   updatePinDisplay();
 }
