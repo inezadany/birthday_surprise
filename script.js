@@ -8,20 +8,20 @@ const CONFIG = {
   passkey: "2026",
 
   // Her name (optional). Empty = uses "my love" / "love"
-  herName: "",
+  herName: "Ariane",
 
   // Your name for the end of the letter (optional). Empty = no name
-  fromName: "",
+  fromName: "Dany",
 
   // Type her birth date as "YYYY-MM-DD" to calculate her age automatically.
   // Leave empty to use fixedAge below.
-  birthDate: "",
+  birthDate: "2003-12-18",
   fixedAge: { years: 23, months: 0, days: 1 },
 
   // Your WhatsApp number for the "Send me a message" button on the last screen.
   // Use country code, digits only, no + or spaces (example: "250788123456").
   // Leave empty to hide the button. Note: it will be visible in this public file.
-  whatsappNumber: "",
+  whatsappNumber: "+250798259996",
   replyText: "Thank you for my birthday surprise. I love you!",
 
   // Seconds the "Loading something special" screen stays up (in milliseconds)
