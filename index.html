@@ -2,154 +2,239 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#080103">
-  <title>Happy Birthday My Love 🌸</title>
+  <meta name="description" content="A little birthday surprise, made with love.">
+  <meta property="og:title" content="Happy Birthday, My Love">
+  <meta property="og:description" content="I made something special for you.">
+  <meta property="og:type" content="website">
+  <title>Happy Birthday My Love</title>
+
+  <!-- Inline heart favicon (no extra file needed, so no 404 on GitHub Pages) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23ff4d6d' d='M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z'/%3E%3C/svg%3E">
+
+  <!-- Fonts + Bootstrap Icons (all served over HTTPS, works on GitHub Pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 
 <body>
-  <main class="app-container">
+  <!-- Soft floating hearts (filled by script.js) -->
+  <div id="floaters" aria-hidden="true"></div>
+
+  <!-- Progress bar (visible after unlocking) -->
+  <div class="topbar" id="topbar" aria-hidden="true"><span id="progressFill"></span></div>
+
+  <!-- Optional background music: add assets/music.mp3 to enable. Button stays hidden if the file is missing. -->
+  <button id="musicBtn" class="music-btn" type="button" aria-label="Pause music" hidden>
+    <i class="bi bi-volume-up-fill" id="musicIcon"></i>
+  </button>
+  <audio id="bgMusic" loop preload="none" src="assets/music.mp3"></audio>
+
+  <main class="app-container" id="app">
+
+    <!-- Balloons for the final screen (behind content) -->
+    <div class="balloons" id="balloons" aria-hidden="true"></div>
 
     <!-- PART 1: LOCKED -->
     <section id="screen-lock" class="screen active">
-      <div class="lock-card">
-        <div class="lock-status">LOCKED</div>
-        <div class="subtitle">Click a picture to reveal passkey</div>
-        <button class="hint-link" onclick="openHint()">Click here to view passkey 📷</button>
+      <div class="lock-card" id="lockCard">
+        <div class="lock-icon"><i class="bi bi-lock-fill" id="lockIcon"></i></div>
+        <h1 class="lock-status">Locked</h1>
+        <p class="subtitle">Tap below to reveal the passkey</p>
+        <button class="hint-link" id="hintBtn" type="button">
+          <i class="bi bi-camera-fill"></i> View the passkey photo
+        </button>
 
-        <div class="pin-display" id="pinDisplay">_ _ _ _</div>
+        <div class="pin-display" id="pinDisplay" role="status" aria-live="polite"></div>
+        <p class="pin-error" id="pinError" role="alert"></p>
 
-        <div class="keypad">
-          <button class="key-btn" onclick="pressKey('1')">1</button>
-          <button class="key-btn" onclick="pressKey('2')">2</button>
-          <button class="key-btn" onclick="pressKey('3')">3</button>
-          <button class="key-btn" onclick="pressKey('4')">4</button>
-          <button class="key-btn" onclick="pressKey('5')">5</button>
-          <button class="key-btn" onclick="pressKey('6')">6</button>
-          <button class="key-btn" onclick="pressKey('7')">7</button>
-          <button class="key-btn" onclick="pressKey('8')">8</button>
-          <button class="key-btn" onclick="pressKey('9')">9</button>
-          <button class="key-btn" onclick="clearPin()">⌫</button>
-          <button class="key-btn" onclick="pressKey('0')">0</button>
-          <button class="key-btn" onclick="submitPin()">🔓</button>
+        <div class="keypad" id="keypad">
+          <button class="key-btn" type="button" data-key="1">1</button>
+          <button class="key-btn" type="button" data-key="2">2</button>
+          <button class="key-btn" type="button" data-key="3">3</button>
+          <button class="key-btn" type="button" data-key="4">4</button>
+          <button class="key-btn" type="button" data-key="5">5</button>
+          <button class="key-btn" type="button" data-key="6">6</button>
+          <button class="key-btn" type="button" data-key="7">7</button>
+          <button class="key-btn" type="button" data-key="8">8</button>
+          <button class="key-btn" type="button" data-key="9">9</button>
+          <button class="key-btn" type="button" data-action="clear" aria-label="Delete last digit"><i class="bi bi-backspace"></i></button>
+          <button class="key-btn" type="button" data-key="0">0</button>
+          <button class="key-btn" type="button" data-action="submit" aria-label="Unlock"><i class="bi bi-unlock-fill"></i></button>
         </div>
       </div>
     </section>
 
     <!-- PASSKEY HINT -->
-    <div id="hintModal" class="modal-overlay">
+    <div id="hintModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Passkey hint">
       <div class="modal-card">
-        <button class="close-btn" onclick="closeHint()">&times;</button>
+        <button class="close-btn" id="hintClose" type="button" aria-label="Close"><i class="bi bi-x-lg"></i></button>
         <img src="assets/photo2.JPG" alt="Passkey hint">
-        <div class="modal-passkey">PASSKEY = 2026</div>
+        <div class="modal-passkey" id="modalPasskey"></div>
       </div>
     </div>
 
     <!-- PART 2: LOADING -->
     <section id="screen-loading" class="screen">
-      <img src="assets/photo2.JPG" alt="Profile" class="profile-img loading-img">
+      <img src="assets/photo2.JPG" alt="" class="profile-img loading-img">
       <div class="title">Hmm...</div>
       <div class="subtitle">
         Loading something special...<br>
-        <span class="pink-bold">FOR YOU</span>
+        <span class="pink-bold">just for you</span>
       </div>
-      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></div>
     </section>
 
     <!-- PART 3: IT'S YOUR SPECIAL DAY -->
     <section id="screen-welcome" class="screen">
       <img src="assets/photo1.JPG" alt="Profile" class="profile-img">
-      <div class="title">It's Your Special Day 🌸</div>
+      <div class="title">It's your special day <i class="bi bi-flower1 ico"></i></div>
       <div class="subtitle">I made something special for you...</div>
-      <button class="btn-main" onclick="goToScreen('screen-counter')">START 💖</button>
+      <button class="btn-main" type="button" data-go="screen-counter">Start <i class="bi bi-heart-fill"></i></button>
     </section>
 
     <!-- PART 4: BIRTHDAY COUNTER -->
     <section id="screen-counter" class="screen">
       <img src="assets/photo1.JPG" alt="Profile" class="profile-img">
-      <div class="title">Happy Birthday My Girl 🌸</div>
+      <div class="title">Happy birthday, my girl <i class="bi bi-flower1 ico"></i></div>
       <div class="subtitle">You have completed</div>
 
       <div class="counter-grid">
         <div class="counter-box">
-          <div class="counter-num">23</div>
-          <div class="counter-label">YEARS</div>
+          <div class="counter-num" id="cntYears">0</div>
+          <div class="counter-label" id="lblYears">Years</div>
         </div>
         <div class="counter-box">
-          <div class="counter-num">0</div>
-          <div class="counter-label">MONTHS</div>
+          <div class="counter-num" id="cntMonths">0</div>
+          <div class="counter-label" id="lblMonths">Months</div>
         </div>
         <div class="counter-box">
-          <div class="counter-num">1</div>
-          <div class="counter-label">DAY</div>
+          <div class="counter-num" id="cntDays">0</div>
+          <div class="counter-label" id="lblDays">Days</div>
         </div>
       </div>
 
-      <button class="btn-main" onclick="goToScreen('screen-gallery')">NEXT 💖</button>
+      <p class="subtitle counter-note">Here's to another beautiful year.</p>
+      <button class="btn-main" type="button" data-go="screen-wish">Next <i class="bi bi-arrow-right"></i></button>
     </section>
 
-    <!-- PART 5: SPECIAL MEMORIES -->
+    <!-- PART 5: MAKE A WISH -->
+    <section id="screen-wish" class="screen">
+      <div class="title">Make a wish <i class="bi bi-stars ico"></i></div>
+      <div class="subtitle">Close your eyes, think of something special,<br>then blow out the candles.</div>
+
+      <button class="cake" id="cake" type="button" aria-label="Birthday cake with candles">
+        <span class="candles">
+          <span class="candle"><i class="flame"></i></span>
+          <span class="candle"><i class="flame"></i></span>
+          <span class="candle"><i class="flame"></i></span>
+        </span>
+        <span class="tier tier-top"></span>
+        <span class="tier tier-bottom"></span>
+        <span class="plate"></span>
+      </button>
+
+      <div class="wish-status" id="wishStatus" role="status">Tap the cake or the button below.</div>
+      <button class="btn-main" type="button" id="wishBtn"><i class="bi bi-wind"></i> Blow out the candles</button>
+    </section>
+
+    <!-- PART 6: SPECIAL MEMORIES -->
     <section id="screen-gallery" class="screen">
-      <div class="title">Special Memories</div>
-      <div class="subtitle">A few memories I wanted you to see 🌸</div>
+      <div class="title">Special memories <i class="bi bi-images ico"></i></div>
+      <div class="subtitle">Tap any photo to see it bigger.</div>
 
-      <!-- Mobile-friendly 2 x 2 gallery -->
-      <div class="gallery-grid">
-        <div class="gallery-card"><img src="assets/photo1.JPG" alt="Memory 1"></div>
-        <div class="gallery-card"><img src="assets/photo2.JPG" alt="Memory 2"></div>
-        <div class="gallery-card"><img src="assets/photo3.JPG" alt="Memory 3"></div>
-        <div class="gallery-card"><img src="assets/photo2.JPG" alt="Memory 4"></div>
-      </div>
+      <!-- Photos are built from CONFIG.photos in script.js -->
+      <div class="gallery-grid" id="galleryGrid"></div>
 
-      <button class="btn-main" onclick="goToScreen('screen-letter-intro')">MY MESSAGE 💖</button>
+      <button class="btn-main" type="button" data-go="screen-reasons">Next <i class="bi bi-arrow-right"></i></button>
     </section>
 
-    <!-- PART 6: LETTER INTRO -->
+    <!-- PART 7: REASONS I LOVE YOU -->
+    <section id="screen-reasons" class="screen">
+      <div class="title">Why I love you <i class="bi bi-heart-fill ico"></i></div>
+      <div class="subtitle" id="reasonHint">Tap the heart to read them one by one.</div>
+
+      <div class="reason-card" id="reasonCard" aria-live="polite">
+        <div class="reason-num" id="reasonNum"></div>
+        <div class="reason-text" id="reasonText">Your first reason is waiting...</div>
+      </div>
+      <div class="reason-dots" id="reasonDots" aria-hidden="true"></div>
+
+      <button class="heart-btn" id="reasonBtn" type="button" aria-label="Show the next reason"><i class="bi bi-heart-fill"></i></button>
+      <button class="btn-main" type="button" id="reasonNext" data-go="screen-letter-intro" hidden>My message <i class="bi bi-envelope-heart-fill"></i></button>
+    </section>
+
+    <!-- PART 8: LETTER INTRO -->
     <section id="screen-letter-intro" class="screen">
-      <div class="title">A LETTER, JUST FOR YOU</div>
-      <div class="subtitle">Tap the heart to reveal your message</div>
+      <div class="title">A letter, just for you</div>
+      <div class="subtitle">Tap the envelope to reveal your message.</div>
 
       <div class="envelope-card">
-        <button class="heart-btn" onclick="openLetter()">💌</button>
-        <div id="letterStatus">TAP TO OPEN</div>
+        <button class="heart-btn" id="envelopeBtn" type="button" aria-label="Open the letter"><i class="bi bi-envelope-heart-fill"></i></button>
+        <div id="letterStatus">Tap to open</div>
       </div>
 
-      <button class="btn-secondary small-btn" onclick="goToScreen('screen-gallery')">← BACK</button>
+      <button class="btn-secondary small-btn" type="button" data-go="screen-reasons"><i class="bi bi-arrow-left"></i> Back</button>
     </section>
 
-    <!-- PART 7: ACTUAL LETTER -->
+    <!-- PART 9: ACTUAL LETTER -->
     <section id="screen-message" class="screen">
-      <div class="letter-page">
-        <div class="title">JUST FOR YOU 💖</div>
-        <p class="letter-greeting">Happy Birthday, Love 💖</p>
+      <div class="letter-page" id="letterPage">
+        <div class="title">Just for you <i class="bi bi-heart-fill ico"></i></div>
+        <p class="letter-greeting">Happy birthday, <span data-her-name>love</span></p>
 
-        <div class="letter-text">
-          You are the most beautiful part of my life, and I'm so lucky to have you.
-          Your smile makes my days better, and your presence makes everything feel special.
-          I hope your birthday is filled with happiness, love, and endless smiles.
-          <br><br>
-          Always stay happy, because your happiness means a lot to me. ❤️
+        <div class="letter-text" id="letterText">
+          <p>You are the most beautiful part of my life, and I'm so lucky to have you. Your smile makes my days better, and your presence makes everything feel special. I hope your birthday is filled with happiness, love, and endless smiles.</p>
+          <p>Always stay happy, because your happiness means a lot to me.</p>
         </div>
 
-        <div class="action-btns">
-          <button class="btn-main full-btn" onclick="triggerCelebrate()">CELEBRATE 💖</button>
-          <button class="btn-secondary full-btn" onclick="restartApp()">RESTART 🔄</button>
+        <div class="letter-end" id="letterEnd" hidden>
+          <p class="letter-sign">With all my love<span id="fromName"></span> <i class="bi bi-heart-fill"></i></p>
+        </div>
+
+        <div class="action-btns" id="letterActions" hidden>
+          <button class="btn-main full-btn" type="button" id="celebrateBtn">Celebrate <i class="bi bi-balloon-heart-fill"></i></button>
+          <button class="btn-secondary full-btn" type="button" data-action="restart"><i class="bi bi-arrow-clockwise"></i> Restart</button>
         </div>
       </div>
     </section>
 
-    <!-- PART 8: CELEBRATION -->
+    <!-- PART 10: CELEBRATION -->
     <section id="screen-celebration" class="screen">
-      <div class="celebration-heart">💖</div>
-      <div class="title">Happy Birthday, My Love 🌸</div>
+      <div class="celebration-heart"><i class="bi bi-heart-fill"></i></div>
+      <div class="title">Happy birthday, <span data-her-name>my love</span> <i class="bi bi-flower1 ico"></i></div>
       <div class="subtitle">I hope today gives you every reason to smile.</div>
-      <button class="btn-main" onclick="restartApp()">START AGAIN 🔄</button>
+
+      <div class="final-actions">
+        <a class="btn-main" id="replyBtn" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          <i class="bi bi-chat-heart-fill"></i> Send me a message
+        </a>
+        <button class="btn-secondary" type="button" id="replayBtn"><i class="bi bi-stars"></i> More confetti</button>
+        <button class="btn-secondary" type="button" data-action="restart"><i class="bi bi-arrow-clockwise"></i> Start again</button>
+      </div>
     </section>
 
   </main>
 
-  <script src="script.js"></script>
+  <!-- PHOTO VIEWER (opens when a memory is tapped) -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true">
+    <div class="lb-count" id="lbCount"></div>
+    <button class="lb-btn lb-close" id="lbClose" type="button" aria-label="Close photo"><i class="bi bi-x-lg"></i></button>
+    <button class="lb-btn lb-nav lb-prev" id="lbPrev" type="button" aria-label="Previous photo"><i class="bi bi-chevron-left"></i></button>
+    <div class="lb-stage">
+      <figure class="lb-figure" id="lbFigure">
+        <img id="lbImg" src="" alt="" data-no-fallback>
+        <figcaption id="lbCaption"></figcaption>
+      </figure>
+    </div>
+    <button class="lb-btn lb-nav lb-next" id="lbNext" type="button" aria-label="Next photo"><i class="bi bi-chevron-right"></i></button>
+  </div>
 </body>
 </html>
