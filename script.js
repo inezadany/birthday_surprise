@@ -15,7 +15,7 @@ const CONFIG = {
 
   // Type her birth date as "YYYY-MM-DD" to calculate her age automatically.
   // Leave empty to use fixedAge below.
-  birthDate: "",
+  birthDate: "2004-03-06",
   fixedAge: { years: 23, months: 0, days: 1 },
 
   // Your WhatsApp number for the "Send me a message" button on the last screen.
@@ -26,7 +26,7 @@ const CONFIG = {
 
   // The day you got together, as "YYYY-MM-DD" (or "YYYY-MM-DDTHH:MM" for an exact time).
   // Leave empty and the "Our time together" screen is skipped.
-  togetherSince: "2024-02-14",
+  togetherSince: "2022-02-14",
 
   // To receive her quiz answers by email: create a free key at web3forms.com
   // (it is emailed to you) and paste it here. Empty = answers are not sent automatically.
