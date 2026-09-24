@@ -122,6 +122,34 @@
       </div>
 
       <p class="subtitle counter-note">Here's to another beautiful year.</p>
+      <button class="btn-main" type="button" data-go="screen-together">Next <i class="bi bi-arrow-right"></i></button>
+    </section>
+
+    <!-- TOGETHER COUNTER (skipped until CONFIG.togetherSince is set) -->
+    <section id="screen-together" class="screen">
+      <div class="title">Our time together <i class="bi bi-hourglass-split ico"></i></div>
+      <div class="subtitle">Every moment with you counts.</div>
+
+      <div class="counter-grid">
+        <div class="counter-box">
+          <div class="counter-num" id="tgDays">0</div>
+          <div class="counter-label">Days</div>
+        </div>
+        <div class="counter-box">
+          <div class="counter-num" id="tgHours">0</div>
+          <div class="counter-label">Hours</div>
+        </div>
+        <div class="counter-box">
+          <div class="counter-num" id="tgMinutes">0</div>
+          <div class="counter-label">Minutes</div>
+        </div>
+        <div class="counter-box">
+          <div class="counter-num" id="tgSeconds">0</div>
+          <div class="counter-label">Seconds</div>
+        </div>
+      </div>
+
+      <p class="subtitle counter-note">And I would choose every one of them again.</p>
       <button class="btn-main" type="button" data-go="screen-wish">Next <i class="bi bi-arrow-right"></i></button>
     </section>
 
@@ -168,7 +196,47 @@
       <div class="reason-dots" id="reasonDots" aria-hidden="true"></div>
 
       <button class="heart-btn" id="reasonBtn" type="button" aria-label="Show the next reason"><i class="bi bi-heart-fill"></i></button>
-      <button class="btn-main" type="button" id="reasonNext" data-go="screen-letter-intro" hidden>My message <i class="bi bi-envelope-heart-fill"></i></button>
+      <button class="btn-main" type="button" id="reasonNext" data-go="screen-quiz" hidden>Next <i class="bi bi-arrow-right"></i></button>
+    </section>
+
+    <!-- QUIZ ABOUT US -->
+    <section id="screen-quiz" class="screen">
+      <div class="title">A little quiz about us <i class="bi bi-chat-heart-fill ico"></i></div>
+      <div class="subtitle" id="quizNote" hidden>Your answers will be sent to me, so answer from the heart.</div>
+
+      <div id="quizStage" class="quiz-stage">
+        <div class="quiz-card">
+          <div class="quiz-count" id="quizCount"></div>
+          <div class="quiz-q" id="quizQ"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div id="quizTextWrap" hidden>
+            <input class="quiz-input" id="quizInput" type="text" maxlength="140" autocomplete="off" placeholder="Type your answer" aria-label="Your answer">
+          </div>
+          <div class="quiz-reaction" id="quizReaction" aria-live="polite"></div>
+        </div>
+        <button class="btn-main" type="button" id="quizNext" disabled>Next <i class="bi bi-arrow-right"></i></button>
+      </div>
+
+      <div class="quiz-card" id="quizEnd" hidden>
+        <div class="quiz-end-icon"><i class="bi bi-heart-fill"></i></div>
+        <p class="quiz-end-text" id="quizEndText"></p>
+        <p class="quiz-status" id="quizStatus" role="status"></p>
+        <a class="btn-secondary" id="quizWhatsapp" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          <i class="bi bi-whatsapp"></i> Send my answers on WhatsApp
+        </a>
+      </div>
+      <button class="btn-main" type="button" id="quizContinue" data-go="screen-scratch" hidden>Next <i class="bi bi-arrow-right"></i></button>
+    </section>
+
+    <!-- SCRATCH CARDS -->
+    <section id="screen-scratch" class="screen">
+      <div class="title">Love coupons <i class="bi bi-ticket-perforated-fill ico"></i></div>
+      <div class="subtitle" id="scratchHint">Scratch each card to reveal a gift from me.</div>
+
+      <div class="scratch-grid" id="scratchGrid"></div>
+
+      <button class="btn-secondary" type="button" id="scratchRevealAll"><i class="bi bi-magic"></i> Reveal all</button>
+      <button class="btn-main" type="button" id="scratchNext" data-go="screen-letter-intro" hidden>My message <i class="bi bi-envelope-heart-fill"></i></button>
     </section>
 
     <!-- PART 8: LETTER INTRO -->
@@ -181,7 +249,7 @@
         <div id="letterStatus">Tap to open</div>
       </div>
 
-      <button class="btn-secondary small-btn" type="button" data-go="screen-reasons"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="btn-secondary small-btn" type="button" data-go="screen-scratch"><i class="bi bi-arrow-left"></i> Back</button>
     </section>
 
     <!-- PART 9: ACTUAL LETTER -->
@@ -200,10 +268,28 @@
         </div>
 
         <div class="action-btns" id="letterActions" hidden>
-          <button class="btn-main full-btn" type="button" id="celebrateBtn">Celebrate <i class="bi bi-balloon-heart-fill"></i></button>
+          <button class="btn-main full-btn" type="button" id="celebrateBtn">One more surprise <i class="bi bi-gift-fill"></i></button>
           <button class="btn-secondary full-btn" type="button" data-action="restart"><i class="bi bi-arrow-clockwise"></i> Restart</button>
         </div>
       </div>
+    </section>
+
+    <!-- GIFT BOX -->
+    <section id="screen-gift" class="screen">
+      <div class="title">One more surprise <i class="bi bi-gift-fill ico"></i></div>
+      <div class="subtitle" id="giftHint">Tap the gift to open it.</div>
+
+      <button class="gift" id="giftBox" type="button" aria-label="Open the gift">
+        <span class="gift-lid"></span>
+        <span class="gift-body"></span>
+      </button>
+
+      <div class="gift-reveal" id="giftReveal" hidden>
+        <img class="gift-photo" id="giftPhoto" alt="A surprise for you" hidden>
+        <p class="gift-message" id="giftMessage"></p>
+      </div>
+
+      <button class="btn-main" type="button" id="giftNext" data-go="screen-celebration" hidden>Finish <i class="bi bi-heart-fill"></i></button>
     </section>
 
     <!-- PART 10: CELEBRATION -->
